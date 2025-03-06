@@ -1,9 +1,9 @@
-from classifiers import LangChainLLMClassifier, recursive_classify
-
 from dotenv import load_dotenv
 
+from classifiers import VectorClassifier, recursive_classify
 from test.hierarchy_build import build_full_hierarchy
 from test.test_items import get_test_line_items
+from vector_embedding import load_hierarchy_into_chroma, get_vector_store
 
 load_dotenv()
 
@@ -14,9 +14,16 @@ if __name__ == "__main__":
     # Example candidate categories (in practice, these would be extracted from your hierarchy)
     # Create an instance of the LangChain-based classifier
     # Build the hierarchy
-    classifier = LangChainLLMClassifier(model_name="gpt-4o-mini",
-                                        temperature=0.0)
+    # getting hierarchy
     hierarchy_roots = build_full_hierarchy()
+    BUILD_HIERARCHY = True
+    if BUILD_HIERARCHY:
+        # hierarchy_to_documents
+        vectorstore = load_hierarchy_into_chroma(hierarchy_roots)
+    else:
+        vectorstore = get_vector_store()
+
+    classifier = VectorClassifier(vectorstore=vectorstore)
 
     # Prepare test line items with expected classification paths.
     test_line_items = get_test_line_items()
@@ -32,3 +39,13 @@ if __name__ == "__main__":
         print(f"Line Item: '{line_item}'")
         print(f"  Expected Path: {expected_path}")
         print(f"  Result: {result_list}")
+
+
+    # results = vectorstore.similarity_search_with_score(
+    #     query = "A4 white paper ream",
+    #     k=1,
+    #     filter = {'level':1}
+    # )
+
+    print("Documents at level 1:")
+

@@ -35,7 +35,10 @@ def load_hierarchy_from_excel_levels(file_path: str) -> List[Category]:
 
             if key not in tree_dict:
                 # For simplicity, we use the cell value for both code and name.
-                new_cat = Category(code=cell_value, name=cell_value, children=[])
+                new_cat = Category(code=cell_value,
+                                   name=cell_value,
+                                   level=level, # TODO -> needs to be checked
+                                   children=[])
                 tree_dict[key] = new_cat
 
                 if parent:
@@ -50,27 +53,29 @@ def load_hierarchy_from_excel_levels(file_path: str) -> List[Category]:
     return list(roots.values())
 
 
-def load_hierarchy_from_excel(file_path: str) -> List[Category]:
-    df = pd.read_excel(file_path)
-    # Create a mapping from code to Category
-    categories: Dict[str, Category] = {}
-    for _, row in df.iterrows():
-        code = row["Code"]
-        name = row["Name"]
-        description = row.get("Description", None)
-        categories[code] = Category(code=code, name=name, description=description, children=[])
-    # Build the tree by linking children to their parents.
-    roots = []
-    for _, row in df.iterrows():
-        code = row["Code"]
-        parent_code = row["ParentCode"]
-        if pd.isna(parent_code):
-            roots.append(categories[code])
-        else:
-            parent = categories.get(parent_code)
-            if parent:
-                parent.children.append(categories[code])
-            else:
-                # If the parent is not found, treat this category as a root.
-                roots.append(categories[code])
-    return roots
+# def load_hierarchy_from_excel(file_path: str) -> List[Category]:
+#     df = pd.read_excel(file_path)
+#     # Create a mapping from code to Category
+#     categories: Dict[str, Category] = {}
+#     for _, row in df.iterrows():
+#         code = row["Code"]
+#         name = row["Name"]
+#         description = row.get("Description", None)
+#         categories[code] = Category(code=code,
+#                                     name=name,
+#                                     description=description, children=[])
+#     # Build the tree by linking children to their parents.
+#     roots = []
+#     for _, row in df.iterrows():
+#         code = row["Code"]
+#         parent_code = row["ParentCode"]
+#         if pd.isna(parent_code):
+#             roots.append(categories[code])
+#         else:
+#             parent = categories.get(parent_code)
+#             if parent:
+#                 parent.children.append(categories[code])
+#             else:
+#                 # If the parent is not found, treat this category as a root.
+#                 roots.append(categories[code])
+#     return roots
