@@ -76,3 +76,5 @@ def build_full_hierarchy() -> Category:
         root.add_child(lvl1_cat)
 
     return root
+
+

@@ -1,3 +1,4 @@
+from Category import Category
 from classifiers import LangChainLLMClassifier, recursive_classify
 
 from dotenv import load_dotenv
@@ -16,7 +17,12 @@ if __name__ == "__main__":
     # Build the hierarchy
     classifier = LangChainLLMClassifier(model_name="gpt-4o-mini",
                                         temperature=0.0)
-    hierarchy_roots = build_full_hierarchy()
+    hierarchy_roots: Category = build_full_hierarchy()
+
+    # Print the ASCII tree overview of the hierarchy.
+    print("Hierarchy:")
+    print(hierarchy_roots.ascii_tree(prefix="", is_last=True))
+
 
     # Prepare test line items with expected classification paths.
     test_line_items = get_test_line_items()
